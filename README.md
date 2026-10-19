@@ -29,6 +29,71 @@ For more information, see the following
 2. Run ```main_S3TTV.m```
 
 
+## Python (PyTorch) version
+A Python/PyTorch port of the MATLAB code is also provided. It runs on both GPU (CUDA) and CPU.
+
+| MATLAB | Python |
+| --- | --- |
+| `main_S3TTV.m` | `main_S3TTV_Python.py` |
+| `S3TTV_CPU.m`, `S3TTV_GPU.m` | `S3TTV_python.py` (`S3TTV(HSI_noisy, params, device)`) |
+| `S3TTV_CPU_fast.m`, `S3TTV_GPU_fast.m` | `S3TTV_fast_python.py` (`S3TTV_fast(HSI_noisy, params, device)`) |
+| `sub_functions/operator/*.m` | `sub_functions_python/operators_python.py` |
+| `sub_functions/prox/*.m` | `sub_functions_python/prox_python.py` |
+| `sub_functions/Generate_obsv.m`, `normalize01.m` | `sub_functions_python/generate_obsv_python.py` |
+| `sub_functions/evaluation/*.m` | `sub_functions_python/evaluation_python.py` |
+
+### Setting up the environment
+The environment is managed with [uv](https://docs.astral.sh/uv/).
+
+1. Install uv (if not installed)
+   ```bash
+   # Linux / macOS
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   # Windows (PowerShell)
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+2. Create the virtual environment (`.venv/`) and install the dependencies (Python 3.12, PyTorch, NumPy, SciPy, Matplotlib)
+   ```bash
+   uv sync
+   ```
+3. Check that PyTorch can use the GPU
+   ```bash
+   uv run python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+   ```
+
+By default, PyTorch is installed from the CUDA 12.4 wheel index (`cu124`, see `[tool.uv.sources]` / `[[tool.uv.index]]` in `pyproject.toml`), which works with NVIDIA drivers supporting CUDA 12.4 or later.
+If your driver supports a different CUDA version (check with `nvidia-smi`), replace `cu124` in `pyproject.toml` with the matching one (e.g., `cu118`, `cu126`, `cu128`) and run `uv sync` again.
+On macOS, the default (CPU) PyTorch is installed automatically.
+
+### Running
+1. **Setting parameters**: edit the "User settings" block at the top of `main_S3TTV_Python.py` (same parameters as `main_S3TTV.m`)
+   - `image`: `JasperRidge`, `PaviaUniversity`, or `Beltsville`
+   - `deg`: noise settings (Gaussian sigma, sparse rate, stripe rate, stripe intensity)
+   - `params["rho"]`, `params["blocksize"]`, `params["stopcri"]`, `params["maxiter"]`, `params["disprate"]`
+   - `params["svt_method"]`: `"eigh"` (default) computes the singular value thresholding in the prox of S3TTV through the eigendecomposition of the Gram matrix, which is much faster on GPU. `"svd"` uses `torch.linalg.svd` as in the MATLAB code (same result, slower).
+   - `use_GPU = 1` to use GPU, `use_fast = 1` to use the fast convergence version
+2. Run
+   ```bash
+   uv run python main_S3TTV_Python.py
+   ```
+   The settings can also be overridden from the command line, e.g.,
+   ```bash
+   uv run python main_S3TTV_Python.py --image PaviaUniversity --maxiter 5000
+   uv run python main_S3TTV_Python.py --cpu --standard   # CPU, standard algorithm
+   uv run python main_S3TTV_Python.py --help             # list of all options
+   ```
+3. MPSNR and MSSIM are displayed, and the restored HSI, the removed noise components, the convergence history, and a figure are saved in `result_python/S3TTV_<image>.mat` and `.png`.
+
+Notes:
+- MATLAB and NumPy use different random number generators, so the generated noise is statistically the same but not identical to that of `main_S3TTV.m`. To restore exactly the same observation as in MATLAB, save `HSI_noisy` to a `.mat` file in MATLAB and pass it with `--noisy_mat <file>.mat`.
+- The S3TTV solver can also be called directly from Python:
+  ```python
+  from S3TTV_fast_python import S3TTV_fast
+  HSI_restored, removed_noise, iteration, converge_rate_U = S3TTV_fast(HSI_noisy, params, device="cuda")
+  ```
+  where `params` is a dict with `alpha`, `beta`, `epsilon`, `blocksize`, `maxiter`, `stopcri` (see `main_S3TTV_Python.py`).
+
+
 ## Our Reference
 If you use this code, please cite the following paper:
 
