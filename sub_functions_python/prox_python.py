@@ -30,10 +30,17 @@ def ProjFastL1Ball(X, alpha):
     return x.reshape(X.shape)
 
 
-def set_linalg_backend(device):
-    """On CUDA, MAGMA's batched eigh is much faster than cuSOLVER for the ~100x100 Gram matrices used here."""
-    if torch.device(device).type == "cuda":
-        torch.backends.cuda.preferred_linalg_library("magma")
+def _eigh(G):
+    """Batched eigh. On CUDA, MAGMA is much faster than cuSOLVER for the ~100x100 Gram matrices used here
+    (while cuSOLVER is faster for svd), so MAGMA is selected only for this call."""
+    if G.device.type != "cuda":
+        return torch.linalg.eigh(G)
+    prev = torch.backends.cuda.preferred_linalg_library()
+    torch.backends.cuda.preferred_linalg_library("magma")
+    try:
+        return torch.linalg.eigh(G)
+    finally:
+        torch.backends.cuda.preferred_linalg_library(prev)
 
 
 def _svt_batched(M, gamma, method):
@@ -49,7 +56,7 @@ def _svt_batched(M, gamma, method):
         transpose = M.shape[-2] > M.shape[-1]
         if transpose:
             M = M.transpose(-2, -1)
-        w, Q = torch.linalg.eigh(M @ M.transpose(-2, -1))
+        w, Q = _eigh(M @ M.transpose(-2, -1))
         s = torch.sqrt(torch.clamp(w, min=0))
         scale = torch.where(s > gamma, 1 - gamma / s.clamp(min=gamma), torch.zeros_like(s))
         out = (Q * scale.unsqueeze(-2)) @ (Q.transpose(-2, -1) @ M)

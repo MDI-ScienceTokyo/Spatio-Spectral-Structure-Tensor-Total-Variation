@@ -30,14 +30,13 @@ import torch
 from sub_functions_python.operators_python import (
     D, Dt, Dv, Dvt, Ds, Dst, func_PeriodicExpansion, func_PeriodicExpansionTrans)
 from sub_functions_python.prox_python import (
-    ProjBox, ProjFastL1Ball, ProjL2ball, Prox_S3TTV, set_linalg_backend)
+    ProjBox, ProjFastL1Ball, ProjL2ball, Prox_S3TTV)
 
 
 @torch.no_grad()
 def S3TTV(HSI_noisy, params, device="cuda"):
     print(f"** Running S3TTV ({device}) **")
     device = torch.device(device)
-    set_linalg_backend(device)
     dtype = torch.float32
 
     HSI_noisy = torch.as_tensor(np.asarray(HSI_noisy), dtype=dtype, device=device)
