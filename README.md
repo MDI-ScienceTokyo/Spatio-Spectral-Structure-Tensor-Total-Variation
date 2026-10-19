@@ -152,7 +152,10 @@ To compare with other methods (**SSTV** [2], **HSSTV** [3], **l0-l1HTV** [4], **
 - Use `show_band` to select the band index for visualization
 - The script compares results in `result/<condition>/<name_method>/` and selects the best result for each method
 
+## Acknowledgments
 
+This work was supported in part by the Grant-in-Aid for JSPS Fellows under Grant JP24KJ1068 and Grant 25KJ0117, in part by JSPS KAKENHI under Grant 22H03610, Grant 22H00512, Grant 23H01415, Grant 23K17461, Grant 24K03119, Grant 24K22291, Grant 25H01296, and Grant 25K03136, in part by JST AdCORP under Grant JPMJKB2307, in part by JST ACT-X under Grant JPMJAX23CJ, and in part by JST FOREST under Grant JPMJFR232M.
+The presentation of this work at the 2026 IEEE International Geoscience and Remote Sensing Symposium (IGARSS 2026) was supported by The Hara Research Foundation.
 
 ---
 
