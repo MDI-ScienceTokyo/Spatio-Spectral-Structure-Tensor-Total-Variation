@@ -35,8 +35,8 @@ A Python/PyTorch port of the MATLAB code is also provided. It runs on both GPU (
 | MATLAB | Python |
 | --- | --- |
 | `main_S3TTV.m` | `main_S3TTV_Python.py` |
-| `S3TTV_CPU.m`, `S3TTV_GPU.m` | `S3TTV_python.py` (`S3TTV(HSI_noisy, params, device)`) |
-| `S3TTV_CPU_fast.m`, `S3TTV_GPU_fast.m` | `S3TTV_fast_python.py` (`S3TTV_fast(HSI_noisy, params, device)`) |
+| `solvers/S3TTV_CPU.m`, `solvers/S3TTV_GPU.m` | `solvers_python/S3TTV_python.py` (`S3TTV(HSI_noisy, params, device)`) |
+| `solvers/S3TTV_CPU_fast.m`, `solvers/S3TTV_GPU_fast.m` | `solvers_python/S3TTV_fast_python.py` (`S3TTV_fast(HSI_noisy, params, device)`) |
 | `sub_functions/operator/*.m` | `sub_functions_python/operators_python.py` |
 | `sub_functions/prox/*.m` | `sub_functions_python/prox_python.py` |
 | `sub_functions/Generate_obsv.m`, `normalize01.m` | `sub_functions_python/generate_obsv_python.py` |
@@ -88,7 +88,7 @@ Notes:
 - MATLAB and NumPy use different random number generators, so the generated noise is statistically the same but not identical to that of `main_S3TTV.m`. To restore exactly the same observation as in MATLAB, save `HSI_noisy` to a `.mat` file in MATLAB and pass it with `--noisy_mat <file>.mat`.
 - The S3TTV solver can also be called directly from Python:
   ```python
-  from S3TTV_fast_python import S3TTV_fast
+  from solvers_python.S3TTV_fast_python import S3TTV_fast
   HSI_restored, removed_noise, iteration, converge_rate_U = S3TTV_fast(HSI_noisy, params, device="cuda")
   ```
   where `params` is a dict with `alpha`, `beta`, `epsilon`, `blocksize`, `maxiter`, `stopcri` (see `main_S3TTV_Python.py`).

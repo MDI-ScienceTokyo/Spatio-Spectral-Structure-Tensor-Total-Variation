@@ -9,6 +9,7 @@
 clear
 close all
 addpath(genpath('sub_functions'))
+addpath('solvers')
 addpath('compared_methods')
 fprintf('******* initium *******\n');
 rng('default')

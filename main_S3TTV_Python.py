@@ -16,8 +16,8 @@ import numpy as np
 import scipy.io as sio
 import torch
 
-from S3TTV_python import S3TTV
-from S3TTV_fast_python import S3TTV_fast
+from solvers_python.S3TTV_python import S3TTV
+from solvers_python.S3TTV_fast_python import S3TTV_fast
 from sub_functions_python.evaluation_python import calc_MPSNR, calc_MSSIM
 from sub_functions_python.generate_obsv_python import Generate_obsv
 

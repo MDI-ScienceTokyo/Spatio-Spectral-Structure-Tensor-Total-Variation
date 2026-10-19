@@ -9,6 +9,7 @@
 clear
 close all
 addpath(genpath('sub_functions'))
+addpath('solvers')
 fprintf('******* initium *******\n');
 rng('default')
 
@@ -82,7 +83,7 @@ fprintf('Blocksize: (%d, %d)\n', params.blocksize(1), params.blocksize(2))
 %% Denoising and destriping
 if use_fast == 1
     if use_GPU == 1
-        [HSI_restored, ~, ~, ~] = S3TTV_GPU_veryfast(HSI_noisy, params); % for GPU user
+        [HSI_restored, ~, ~, ~] = S3TTV_GPU_fast(HSI_noisy, params); % for GPU user
     elseif use_GPU == 0
         [HSI_restored, ~, ~, ~] = S3TTV_CPU_fast(HSI_noisy, params); % for CPU user
     else
